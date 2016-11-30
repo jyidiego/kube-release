@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -e # Exit immediately if a command exists with a non-zero status
+
+# Setup common env vars
+source /var/vcap/packages/kube-bosh-helpers/ctl_setup.sh kube-proxy
+export KUBEPROXY_PID_FILE=${KUBEPROXY_PID_DIR}/kubeproxy.pid
+export PATH=/var/vcap/packages/kube-proxy:$PATH
+
+function wait_for_netsvc() {
+  for i in $(seq 60);do
+    echo "Waiting for ${1}:${2} service..."
+    if timeout 1 bash -c "cat < /dev/null > /dev/tcp/${1}/${2}"; then
+      echo "Waiting over for ${1}:${2} service"
+      return 0
+    fi
+    sleep 5
+  done
+  # Should cause the entire script to exit with status code 1
+  exit 1
+}
+
+case $1 in
+
+  start)
+    pid_guard ${KUBEPROXY_PID_FILE} ${JOB_NAME}
+
+    # set ulimits
+    # ulimit -n ${KUBEPROXY_ULIMIT_NOFILE}
+
+    # wait for kubeapi server to be online
+    wait_for_netsvc ${KUBE_API_IP} 6443 
+
+    # wait for consul dns service to be online
+    wait_for_netsvc 127.0.0.1 53
+
+    # Starting kube-proxy
+    echo "Starting kube-proxy..."
+    exec kube-proxy \
+      --kubeconfig=${KUBE_CONFIG_FILE} \
+      --hostname-override=${HOSTNAME_OVERRIDE} \
+      --proxy-mode=iptables \
+      --v=2 \
+      >>${KUBEPROXY_LOG_DIR}/${OUTPUT_LABEL}.stdout.log \
+      2>>${KUBEPROXY_LOG_DIR}/${OUTPUT_LABEL}.stderr.log &
+
+    echo $! > ${KUBEPROXY_PID_FILE}
+
+    ;;
+
+  stop) 
+    
+    echo "Stopping kube-proxy..."
+    kill_and_wait ${KUBEPROXY_PID_FILE}
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+
+esac
+exit 0

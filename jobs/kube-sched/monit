@@ -1,0 +1,4 @@
+check process kube-scheduler with pidfile /var/vcap/sys/run/kube-sched/kubesched.pid
+  start program "/var/vcap/jobs/kube-sched/bin/kubesched_ctl start"
+  stop program "/var/vcap/jobs/kube-sched/bin/kubesched_ctl stop"
+  group vcap

@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -e # Exit immediately if a command exists with a non-zero status
+
+# Setup common env vars
+source /var/vcap/packages/kube-bosh-helpers/ctl_setup.sh kube-cm
+export KUBECM_PID_FILE=${KUBECM_PID_DIR}/kubecm.pid
+export PATH=/var/vcap/packages/kube-cm:$PATH
+
+function wait_for_kubeapi() {
+  for i in $(seq 55);do
+    if timeout 1 bash -c "cat < /dev/null > /dev/tcp/${1}/${2}"; then
+      return 0
+    fi
+  done
+  # Should cause the entire script to exit with status code 1
+  exit 1
+}
+
+case $1 in
+
+  start)
+    pid_guard ${KUBECM_PID_FILE} ${JOB_NAME}
+
+    # set ulimits
+    # ulimit -n ${KUBECM_ULIMIT_NOFILE}
+
+    # wait for kubeapi server to be online
+    wait_for_kubeapi ${INTERNAL_IP} 8080
+
+    # Start kube-controller-manager
+    exec kube-controller-manager\
+      --allocate-node-cidrs=true \
+      --cluster-cidr=${CLUSTER_CIDR} \
+      --cluster-name=${CLUSTER_NAME} \
+      --leader-elect=true \
+      --master=http://${INTERNAL_IP}:8080 \
+      --root-ca-file=${CA_CERT_FILE} \
+      --service-account-private-key-file=${SERVER_KEY_FILE} \
+      --service-cluster-ip-range=${SERVICE_CIDR} \
+      --v=2 \
+      >>${KUBECM_LOG_DIR}/${OUTPUT_LABEL}.stdout.log \
+      2>>${KUBECM_LOG_DIR}/${OUTPUT_LABEL}.stderr.log &
+
+    echo $! > ${KUBECM_PID_FILE}
+
+    ;;
+
+  stop) 
+    
+    echo "Stopping kube-controller-manager..."
+    kill_and_wait ${KUBECM_PID_FILE}
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+
+esac
+exit 0

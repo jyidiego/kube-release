@@ -1,0 +1,5 @@
+---
+builds:
+  ea535279-5408-4f6d-b9b1-24b119c7b789:
+    version: 1.0-alpha.0
+format-version: '2'

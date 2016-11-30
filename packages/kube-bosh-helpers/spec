@@ -1,0 +1,5 @@
+---
+name: kube-bosh-helpers
+dependencies: []
+files:
+  - kube-bosh-helpers/*

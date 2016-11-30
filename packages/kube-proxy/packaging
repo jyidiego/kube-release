@@ -1,0 +1,5 @@
+set -e -x
+
+cp kube-proxy/kube-proxy-v1.4.6 ${BOSH_INSTALL_TARGET}/kube-proxy
+cd ${BOSH_INSTALL_TARGET}
+chmod +x kube-proxy

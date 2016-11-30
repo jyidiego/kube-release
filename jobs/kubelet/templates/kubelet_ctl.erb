@@ -1,0 +1,91 @@
+#!/bin/bash
+
+set -e # Exit immediately if a command exists with a non-zero status
+set -x # Trace invocation of kubelet command
+
+# Setup common env vars
+source /var/vcap/packages/kube-bosh-helpers/ctl_setup.sh kubelet
+export KUBELET_PID_FILE=${KUBELET_PID_DIR}/kubelet.pid
+export PATH=/var/vcap/packages/nsenter:/var/vcap/packages/kubelet:$PATH
+
+function wait_for_netsvc() {
+  for i in $(seq 60);do
+    echo "Waiting for ${1}:${2} service..."
+    if timeout 1 bash -c "cat < /dev/null > /dev/tcp/${1}/${2}"; then
+      echo "Waiting over for ${1}:${2} service"
+      return 0
+    fi
+    sleep 5
+  done
+  # Should cause the entire script to exit with status code 1
+  exit 1
+}
+
+function wait_for_docker() {
+  for i in $(seq 60);do
+    sleep 5 
+    echo "Checking for /var/vcap/sys/run/docker/docker.sock..."
+    if [ -S /var/vcap/sys/run/docker/docker.sock ];then
+      echo "docker.sock is a socket file...waiting is over."
+      return 0
+    fi
+  done
+}
+
+case $1 in
+
+  start)
+    pid_guard ${KUBELET_PID_FILE} ${JOB_NAME}
+
+    # set ulimits
+    # ulimit -n ${KUBELET_ULIMIT_NOFILE}
+
+    # wait for kubeapi server to be online
+    wait_for_netsvc ${KUBE_API_SERVER} 6443
+
+    # wait for consul dns server to be online
+    wait_for_netsvc 127.0.0.1 53
+
+    # wait for docker
+    wait_for_docker
+
+    # Starting kubelet
+    echo "Starting kubelet..."
+    exec kubelet \
+      --allow-privileged=true \
+      --cloud-provider= \
+      --cluster-dns=${CLUSTER_DNS} \
+      --cluster-domain=${CLUSTER_DOMAIN} \
+      --hostname-override=${HOSTNAME_OVERRIDE} \
+      --require-kubeconfig=true \
+      --container-runtime=docker \
+      --docker-endpoint=unix:///var/vcap/sys/run/docker/docker.sock \
+      --network-plugin=kubenet \
+      --network-plugin-dir=${CNI_PATH} \
+      --kubeconfig=${KUBE_CONFIG_FILE} \
+      --reconcile-cidr=true \
+      --configure-cbr0=true \
+      --serialize-image-pulls=false \
+      --tls-cert-file=${SERVER_CERT} \
+      --tls-private-key-file=${SERVER_KEY} \
+      --v=2 \
+      >>${KUBELET_LOG_DIR}/${OUTPUT_LABEL}.stdout.log \
+      2>>${KUBELET_LOG_DIR}/${OUTPUT_LABEL}.stderr.log &
+
+    echo $! > ${KUBELET_PID_FILE}
+
+    ;;
+
+  stop) 
+    
+    echo "Stopping kubelet..."
+    kill_and_wait ${KUBELET_PID_FILE}
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+
+esac
+exit 0

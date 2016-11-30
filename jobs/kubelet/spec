@@ -1,0 +1,53 @@
+---
+name: kubelet
+
+packages:
+  - kube-bosh-helpers
+  - cni
+  - nsenter
+  - kubectl
+  - kubelet
+
+consumes:
+  - name: kubeapi_s
+    type: kubeapi_service
+
+templates:
+  kubelet_ctl.erb: bin/kubelet_ctl
+  job_properties.sh.erb: bin/job_properties.sh
+  kubeconfig.erb: config/kubeconfig
+  kubelet.cacert.erb: config/kubelet.cacert
+  kubelet.cert.erb: config/kubelet.cert
+  kubelet.key.erb: config/kubelet.key
+
+properties:
+  token_key:
+    description: "API token key."
+
+  ca_cert_file_path:
+    description: "CA certificate file path."
+    default: /var/vcap/jobs/kubelet/config/kubelet.cacert
+
+  cluster_dns:
+    description: "Pod DNS service"
+    default: 10.32.0.10
+
+  cluster_domain:
+    description: "Pod DNS domain"
+    default: cluster.local 
+
+  cni_path:
+    description: "Path of Container Network Interfaces (CNI)"
+    default: /var/vcap/packages/cni/bin 
+
+  ca_cert:
+    description: "CA certificate"
+
+  server_cert:
+    description: "server certificate"
+
+  server_key:
+    description: "server key"
+
+  advertise_urls_dns_suffix:
+    description: "DNS suffix for all nodes in the kubernetes cluster"

@@ -1,0 +1,40 @@
+azs:
+- name: z1
+  cloud_properties: {availability_zone: us-east-1a}
+
+vm_types:
+- name: master
+  cloud_properties:
+    instance_type: t2.medium
+    ephemeral_disk: {size: 10000, type: gp2}
+- name: worker 
+  cloud_properties:
+    instance_type: m3.large
+    source_dest_check: false
+    ephemeral_disk: {size: 30000, type: gp2}
+
+disk_types:
+- name: default
+  disk_size: 3000
+  cloud_properties: {type: gp2}
+- name: large
+  disk_size: 50_000
+  cloud_properties: {type: gp2}
+
+networks:
+- name: default
+  type: manual
+  subnets:
+  - range: 10.0.1.0/24
+    gateway: 10.0.1.1
+    az: z1
+    static: [10.0.1.60, 10.0.1.61, 10.0.1.62, 10.0.1.63, 10.0.1.64]
+    reserved: [10.0.1.2-10.0.1.5, 10.0.1.255]
+    cloud_properties: {subnet: <aws subnet id>, security_groups: [ <aws sg id>]} # Modify your AWS obj ids here
+
+compilation:
+  workers: 5
+  reuse_compilation_vms: true
+  az: z1
+  vm_type: worker
+  network: default

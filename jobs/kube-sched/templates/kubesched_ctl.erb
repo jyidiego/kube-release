@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -e # Exit immediately if a command exists with a non-zero status
+
+# Setup common env vars
+source /var/vcap/packages/kube-bosh-helpers/ctl_setup.sh kube-sched
+export KUBESCHED_PID_FILE=${KUBESCHED_PID_DIR}/kubesched.pid
+export PATH=/var/vcap/packages/kube-sched:$PATH
+
+function wait_for_kubeapi() {
+  for i in $(seq 55);do
+    if timeout 1 bash -c "cat < /dev/null > /dev/tcp/${1}/${2}"; then
+      return 0
+    fi
+  done
+  # Should cause the entire script to exit with status code 1
+  exit 1
+}
+
+case $1 in
+
+  start)
+    pid_guard ${KUBESCHED_PID_FILE} ${JOB_NAME}
+
+    # set ulimits
+    # ulimit -n ${KUBESCHED_ULIMIT_NOFILE}
+
+    # wait for kubeapi server to be online
+    wait_for_kubeapi ${INTERNAL_IP} 8080
+
+    # Start kube-scheduler
+    exec kube-scheduler\
+      --leader-elect=true \
+      --master=http://${INTERNAL_IP}:8080 \
+      --v=2 \
+      >>${KUBESCHED_LOG_DIR}/${OUTPUT_LABEL}.stdout.log \
+      2>>${KUBESCHED_LOG_DIR}/${OUTPUT_LABEL}.stderr.log &
+
+    echo $! > ${KUBESCHED_PID_FILE}
+
+    ;;
+
+  stop) 
+    
+    echo "Stopping kube-scheduler..."
+    kill_and_wait ${KUBESCHED_PID_FILE}
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+
+esac
+exit 0

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# directory to store the kubeapi-server process IDs
+export KUBECM_PID_DIR=${RUN_DIR}
+
+# primary instance IP
+export INTERNAL_IP=<%= spec.address %>
+
+# ca cert file
+export CA_CERT_FILE=${JOB_DIR}/config/kubecm.cacert
+
+# cluster name
+export CLUSTER_NAME=<%= p("cluster_name") %>
+
+# server key file
+export SERVER_KEY_FILE=${JOB_DIR}/config/kubecm.key
+
+# CIDR for pods in cluster
+export CLUSTER_CIDR=<%= p("cluster_cidr") %>
+
+# CIDR for services in cluster
+export SERVICE_CIDR=<%= p("service_cidr") %>
+
+# log directory
+export KUBECM_LOG_DIR=${LOG_DIR}

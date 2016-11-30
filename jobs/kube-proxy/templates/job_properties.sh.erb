@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# directory to store the kube-proxy process IDs
+export KUBEPROXY_PID_DIR=${RUN_DIR}
+
+# Kube API server IP
+export KUBE_API_IP=<%= link("kubeapi_s").instances[0].address %>
+
+# log directory
+export KUBEPROXY_LOG_DIR=${LOG_DIR}
+
+# kube config file
+export KUBE_CONFIG_FILE=${JOB_DIR}/config/kubeconfig
+
+# hostname override
+export HOSTNAME_OVERRIDE=<%= name.gsub('_', '-') %>-<%= spec.index %>.<%= p("advertise_urls_dns_suffix") %>

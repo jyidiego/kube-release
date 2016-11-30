@@ -1,0 +1,31 @@
+---
+name: kube-proxy
+
+packages:
+  - kube-bosh-helpers
+  - kubectl
+  - kube-proxy
+
+consumes:
+  - name: kubeapi_s
+    type: kubeapi_service
+
+templates:
+  kubeproxy_ctl.erb: bin/kubeproxy_ctl
+  job_properties.sh.erb: bin/job_properties.sh
+  kubeconfig.erb: config/kubeconfig
+  kubeproxy.cacert.erb: config/kubeproxy.cacert
+
+properties:
+  token_key:
+    description: "API token"
+
+  ca_cert:
+    description: "CA certificate"
+
+  ca_cert_file_path:
+    description: "CA certficate file path."
+    default: /var/vcap/jobs/kube-proxy/config/kubeproxy.cacert
+
+  advertise_urls_dns_suffix:
+    description: "DNS suffix for kube-apiserver in the kubernetes cluster"

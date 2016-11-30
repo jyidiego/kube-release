@@ -1,0 +1,4 @@
+check process kube-proxy with pidfile /var/vcap/sys/run/kube-proxy/kubeproxy.pid
+  start program "/var/vcap/jobs/kube-proxy/bin/kubeproxy_ctl start" with timeout 120 seconds
+  stop program "/var/vcap/jobs/kube-proxy/bin/kubeproxy_ctl stop"
+  group vcap

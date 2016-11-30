@@ -1,0 +1,43 @@
+---
+name: kube-api
+
+packages:
+  - kube-bosh-helpers
+  - kubectl
+  - kube-api
+
+templates:
+  kubeapi_ctl.erb: bin/kubeapi_ctl
+  job_properties.sh.erb: bin/job_properties.sh
+  kubeapi.cacert.erb: config/kubeapi.cacert
+  kubeapi.cert.erb: config/kubeapi.cert
+  kubeapi.key.erb: config/kubeapi.key
+  token.erb: config/token.csv
+  authorization-policy.jsonl.erb: config/authorization-policy.jsonl
+
+consumes:
+- name: kubeapi_s
+  type: kubeapi_service
+
+provides:
+- name: kubeapi_s
+  type: kubeapi_service
+
+properties:
+  ca_cert:
+    description: "PEM-encoded CA certificate"
+
+  server_cert:
+    description: "PEM-encoded server certificate"
+
+  server_key:
+    description: "PEM-encoded server key"
+
+  token:
+    description: "API Token used to access Kube API service."
+
+  auth_policy:
+    description: "Authorization policy file"
+
+  advertise_urls_dns_suffix:
+    description: "DNS suffix for kube-apiserver in the kubernetes cluster"

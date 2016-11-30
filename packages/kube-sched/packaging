@@ -1,0 +1,5 @@
+set -e -x
+
+cp kube-sched/kube-scheduler-v1.4.6 ${BOSH_INSTALL_TARGET}/kube-scheduler
+cd ${BOSH_INSTALL_TARGET}
+chmod +x kube-scheduler

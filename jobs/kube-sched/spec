@@ -1,0 +1,13 @@
+---
+name: kube-sched
+
+packages:
+  - kube-bosh-helpers
+  - kubectl
+  - kube-sched
+
+templates:
+  kubesched_ctl.erb: bin/kubesched_ctl
+  job_properties.sh.erb: bin/job_properties.sh
+
+properties: {}

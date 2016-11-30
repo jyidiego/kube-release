@@ -1,0 +1,5 @@
+---
+name: cni 
+dependencies: []
+files:
+  - cni/cni-07a8a28637e97b22eb8dfe710eeae1344f69d16e.tar.gz # From https://storage.googleapis.com/kubernetes-release/network-plugins/cni-07a8a28637e97b22eb8dfe710eeae1344f69d16e.tar.gz

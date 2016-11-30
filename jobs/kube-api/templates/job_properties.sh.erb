@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# directory to store the kubeapi-server process IDs
+export KUBEAPI_PID_DIR=${RUN_DIR}
+
+# instance ip
+export INTERNAL_IP=<%= spec.address %>
+
+# hostname override
+export EXTERNAL_HOSTNAME=<%= name.gsub('_', '-') %>-<%= spec.index %>.<%= p("advertise_urls_dns_suffix") %>
+
+# API server count
+export APISERVER_COUNT=<%= link("kubeapi_s").instances.length %>
+
+# authorization policy file
+export AUTHORIZATION_POLICY_FILE=${JOB_DIR}/config/authorization-policy.jsonl
+
+# ca cert file
+export CA_CERT_FILE=${JOB_DIR}/config/kubeapi.cacert
+
+# server cert file
+export SERVER_CERT_FILE=${JOB_DIR}/config/kubeapi.cert
+
+# server key file
+export SERVER_KEY_FILE=${JOB_DIR}/config/kubeapi.key
+
+# token file
+export TOKEN_FILE=${JOB_DIR}/config/token.csv
+
+# etcd servers
+export ETCD_SERVERS=<%= link("etcd_s").instances.map { |i|
+          "https://#{i.name.gsub('_','-')}-#{i.index}.#{p("advertise_urls_dns_suffix")}:4001" }.join(",") %>
+
+# etcd hosts, different format for checking to see if etcd is online
+export ETCD_HOSTS=<%= link("etcd_s").instances.map { |i| "#{i.address}" }.join("\\ ") %>
+
+# log directory
+export KUBEAPI_LOG_DIR=${LOG_DIR}

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# directory to store the kubeapi-server process IDs
+export KUBESCHED_PID_DIR=${RUN_DIR}
+
+# primary instance IP
+export INTERNAL_IP=<%= spec.address %>
+
+# log directory
+export KUBESCHED_LOG_DIR=${LOG_DIR}

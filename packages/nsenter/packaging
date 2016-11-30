@@ -1,0 +1,4 @@
+set -e -x
+
+cp -a nsenter/nsenter ${BOSH_INSTALL_TARGET}
+chmod +x ${BOSH_INSTALL_TARGET}/nsenter 

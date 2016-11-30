@@ -1,0 +1,5 @@
+set -e -x
+
+cp kube-cm/kube-controller-manager-v1.4.6 ${BOSH_INSTALL_TARGET}/kube-controller-manager
+cd ${BOSH_INSTALL_TARGET}
+chmod +x kube-controller-manager

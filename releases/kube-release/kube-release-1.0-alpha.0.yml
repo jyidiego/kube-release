@@ -1,0 +1,76 @@
+---
+packages:
+- name: cni
+  version: 1b56ed8d46cbc65db7f521eeac18b92d0f6eff46
+  fingerprint: 1b56ed8d46cbc65db7f521eeac18b92d0f6eff46
+  sha1: a068ca226adb1b9849935aa3a302c8e096d33cc7
+  dependencies: []
+- name: kube-api
+  version: 37b450393e7bb521e812a85d850c0960ed42d81f
+  fingerprint: 37b450393e7bb521e812a85d850c0960ed42d81f
+  sha1: 3d33767d63ec327e05396813f6fdd562f9e1f8c0
+  dependencies: []
+- name: kube-bosh-helpers
+  version: da8bfd30cc4b85ec168be0f02c853779ef408e18
+  fingerprint: da8bfd30cc4b85ec168be0f02c853779ef408e18
+  sha1: 9f87cff66614b1605a40dc2c194f7453a9c09ade
+  dependencies: []
+- name: kube-cm
+  version: 6f522a7e6d23c5439f4f740c7fac8f6215d6c21a
+  fingerprint: 6f522a7e6d23c5439f4f740c7fac8f6215d6c21a
+  sha1: a68103ec322b3229534bb3f85f69a0ac03bbca4a
+  dependencies: []
+- name: kube-proxy
+  version: 004422bf21328abbdd1bb6d34c28dce81869c4a2
+  fingerprint: 004422bf21328abbdd1bb6d34c28dce81869c4a2
+  sha1: 5f5d53cf7d49f1818a1722839105172eacf70716
+  dependencies: []
+- name: kube-sched
+  version: cc99d194d93c0901efee7619de98c55e296a3502
+  fingerprint: cc99d194d93c0901efee7619de98c55e296a3502
+  sha1: febf708a3d71fc3916175840586daca1eb310083
+  dependencies: []
+- name: kubectl
+  version: daad0d16e4210cee68d5e75ddc0032e0abc67679
+  fingerprint: daad0d16e4210cee68d5e75ddc0032e0abc67679
+  sha1: de5b91b4459b063b0b6e8c3436d425bb68405302
+  dependencies: []
+- name: kubelet
+  version: 4331249bee9abd17efb35e015e00f3f083309a17
+  fingerprint: 4331249bee9abd17efb35e015e00f3f083309a17
+  sha1: 68bb638d0ff94b25b85aaed62904315eba3a52d9
+  dependencies: []
+- name: nsenter
+  version: 8961ee0ad405a8298d1a46f002b31268d2dd3b81
+  fingerprint: 8961ee0ad405a8298d1a46f002b31268d2dd3b81
+  sha1: 04b3471888f4acc55fe10971d4dd405d0b34b0f2
+  dependencies: []
+jobs:
+- name: kube-api
+  version: c733dcbd6ba5f53452a1ebdfea0ed386cb03b840
+  fingerprint: c733dcbd6ba5f53452a1ebdfea0ed386cb03b840
+  sha1: fc6e114296a4c0987295d74a34bc38d98c8199d1
+- name: kube-cm
+  version: 6b53d9222a30891c3554aab5bc9e8e5c78fe5914
+  fingerprint: 6b53d9222a30891c3554aab5bc9e8e5c78fe5914
+  sha1: 182883804bbc117e5da605cd7b5e4be205ba6d6e
+- name: kube-proxy
+  version: aa9fe0c3082a75759607482f234edf5d6b7f8319
+  fingerprint: aa9fe0c3082a75759607482f234edf5d6b7f8319
+  sha1: 11b6527e56054264405d89cfea5284b1015387cf
+- name: kube-sched
+  version: 46ff73e6ad49278cd4e079188b65f46b773443de
+  fingerprint: 46ff73e6ad49278cd4e079188b65f46b773443de
+  sha1: 958f2f6d131c6b99a26a62f91864346e2e439782
+- name: kubelet
+  version: 83312e05831982a82a5e0a51c17cba8200f2fc2e
+  fingerprint: 83312e05831982a82a5e0a51c17cba8200f2fc2e
+  sha1: e1237d680aa20b64dcb9af0d9d38226aca5725ea
+license:
+  version: 4a3214509eb201b52b50f689236649f51118016b
+  fingerprint: 4a3214509eb201b52b50f689236649f51118016b
+  sha1: 8126a24caae092a22bdf104c9fa5488f99f7be25
+commit_hash: f3ff263f
+uncommitted_changes: false
+name: kube-release
+version: 1.0-alpha.0

@@ -1,0 +1,4 @@
+check process kube-controller-manager with pidfile /var/vcap/sys/run/kube-cm/kubecm.pid
+  start program "/var/vcap/jobs/kube-cm/bin/kubecm_ctl start"
+  stop program "/var/vcap/jobs/kube-cm/bin/kubecm_ctl stop"
+  group vcap

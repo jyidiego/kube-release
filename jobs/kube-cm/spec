@@ -1,0 +1,40 @@
+---
+name: kube-cm
+
+packages:
+  - kube-bosh-helpers
+  - kubectl
+  - kube-cm
+
+templates:
+  kubecm_ctl.erb: bin/kubecm_ctl
+  job_properties.sh.erb: bin/job_properties.sh
+  kubecm.cacert.erb: config/kubecm.cacert
+  kubecm.key.erb: config/kubecm.key
+
+consumes:
+- name: kubecm_s
+  type: kubecm_service
+
+provides:
+- name: kubecm_s
+  type: kubecm_service
+
+properties:
+  ca_cert:
+    description: "PEM-encoded CA certificate"
+
+  server_key:
+    description: "PEM-encoded server key"
+
+  cluster_name:
+    description: "Name of the cluster."
+    default: k8
+
+  cluster_cidr:
+    description: "CIDR Range for Pods in cluster"
+    default: 10.200.0.0/16
+
+  service_cidr:
+    description: "CIDR Range for Services in cluster."
+    default: 10.32.0.0/24

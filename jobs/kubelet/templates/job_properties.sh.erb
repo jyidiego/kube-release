@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# directory to store the kubelet process IDs
+export KUBELET_PID_DIR=${RUN_DIR}
+
+# kubeapi urls 
+export KUBE_API_URLS=<%= link("kubeapi_s").instances.map { |i|
+        "https://#{i.name.gsub('_','-')}-#{i.index}.#{p("advertise_urls_dns_suffix")}:6443" }.join(",") %>
+
+# kubeapi servers 
+export KUBE_API_SERVER=<%= link("kubeapi_s").instances[0].address %>
+
+# hostname override
+export HOSTNAME_OVERRIDE=<%= name.gsub('_', '-') %>-<%= spec.index %>.<%= p("advertise_urls_dns_suffix") %>
+
+# log directory
+export KUBELET_LOG_DIR=${LOG_DIR}
+
+# kube config file
+export KUBE_CONFIG_FILE=${JOB_DIR}/config/kubeconfig
+
+# DNS service for Pods
+export CLUSTER_DNS=<%= p("cluster_dns") %>
+
+# Default DNS domain for Pods
+export CLUSTER_DOMAIN=<%= p("cluster_domain") %>
+
+# Default Container Network Path
+export CNI_PATH=<%= p("cni_path") %>
+
+# Server certificate
+export SERVER_CERT=${JOB_DIR}/config/kubelet.cert
+
+# Key file
+export SERVER_KEY=${JOB_DIR}/config/kubelet.key
+

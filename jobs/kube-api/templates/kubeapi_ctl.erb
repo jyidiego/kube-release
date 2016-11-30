@@ -1,0 +1,74 @@
+#!/bin/bash
+
+set -e # Exit immediately if a command exists with a non-zero status
+
+# Setup common env vars
+source /var/vcap/packages/kube-bosh-helpers/ctl_setup.sh kube-api
+export KUBEAPI_PID_FILE=${KUBEAPI_PID_DIR}/kubeapi.pid
+export PATH=/var/vcap/packages/kube-api:$PATH
+
+function wait_for_etcd() {
+  for i in $(seq 20);do
+    for host in $1;do
+      if timeout 1 bash -c "cat < /dev/null > /dev/tcp/$host/4001"; then
+        return 0
+      fi
+    done
+  done
+  # Should cause the entire script to exit with status code 1
+  exit 1
+} 
+
+case $1 in
+
+  start)
+    pid_guard ${KUBEAPI_PID_FILE} ${JOB_NAME}
+
+    # set ulimits
+    # ulimit -n ${KUBEAPI_ULIMIT_NOFILE}
+
+    # wait for etcd service to be online before starting
+    wait_for_etcd ${ETCD_HOSTS}
+
+    # Start kube-apiserver
+    exec kube-apiserver \
+      --admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
+      --advertise-address=${INTERNAL_IP} \
+      --external-hostname=${EXTERNAL_HOSTNAME} \
+      --allow-privileged=true \
+      --apiserver-count=${APISERVER_COUNT} \
+      --authorization-mode=ABAC \
+      --authorization-policy-file=${AUTHORIZATION_POLICY_FILE} \
+      --bind-address=0.0.0.0 \
+      --enable-swagger-ui=true \
+      --etcd-cafile=${CA_CERT_FILE} \
+      --insecure-bind-address=0.0.0.0 \
+      --kubelet-certificate-authority=${CA_CERT_FILE} \
+      --etcd-servers=${ETCD_SERVERS} \
+      --service-account-key-file=${SERVER_KEY_FILE} \
+      --service-cluster-ip-range=10.32.0.0/24 \
+      --service-node-port-range=30000-32767 \
+      --tls-cert-file=${SERVER_CERT_FILE} \
+      --tls-private-key-file=${SERVER_KEY_FILE} \
+      --token-auth-file=${TOKEN_FILE} \
+      --v=2 \
+      >>${KUBEAPI_LOG_DIR}/${OUTPUT_LABEL}.stdout.log \
+      2>>${KUBEAPI_LOG_DIR}/${OUTPUT_LABEL}.stderr.log &
+
+    echo $! > ${KUBEAPI_PID_FILE}
+
+    ;;
+
+  stop) 
+    
+    echo "Stopping kubeapi-server..."
+    kill_and_wait ${KUBEAPI_PID_FILE}
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+
+esac
+exit 0
