@@ -102,7 +102,7 @@ leverage consul DNS for intercomponent communication. You should set the same se
 - consul properties for server lan ips
 - consul properties for client lan ips (Generally k8 workers) 
 
-Also you'll need to define static ip addresses in the cloud-config. Here is an example using bosh-lite cloud-config:
+Also you'll need to define static ip addresses in the cloud-config. Here is an example cloud-config:
 
 ```
 networks:
@@ -112,16 +112,15 @@ networks:
   - az: z1
     cloud_properties:
       name: random
-    gateway: 10.244.2.1
-    range: 10.244.2.0/24
+    gateway: 10.0.1.1
+    range: 10.0.1.0/24
     reserved:
-    - 10.244.2.2-10.244.2.3
-    - 10.244.2.255
+    - 10.0.1.2-10.0.1.3
+    - 10.0.1.255
     static:
-    - 10.244.2.4
-    - 10.244.2.6
-    - 10.244.2.7
-    - 10.244.2.8
+    - 10.0.1.6
+    - 10.0.1.7
+    - 10.0.1.8
 ```
 
 ### Kubernetes POD Networking
