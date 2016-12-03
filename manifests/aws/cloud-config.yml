@@ -28,7 +28,7 @@ networks:
   - range: 10.0.1.0/24
     gateway: 10.0.1.1
     az: z1
-    static: [10.0.1.60, 10.0.1.61, 10.0.1.62, 10.0.1.63, 10.0.1.64]
+    static: [10.0.1.6, 10.0.1.7, 10.0.1.8]
     reserved: [10.0.1.2-10.0.1.5, 10.0.1.255]
     cloud_properties: {subnet: <aws subnet id>, security_groups: [ <aws sg id>]} # Modify your AWS obj ids here
 

@@ -1,4 +1,4 @@
-# BOSH release for Kubernetes
+# BOSH release for Kubernetes (K8)
 
 This is a project to better understand how to develop BOSH releases and to get to know Kubernetes better.
 This release was based largely off Kelsey Hightower's blog
@@ -53,6 +53,75 @@ cd kube-release/manifests/aws
 bosh update cloud-config cloud-config.yml
 bosh deployment 3-node-with-ssl-consul.yml
 bosh deploy
+```
+
+### Seed IP addresses
+
+Because there isn't an easy way for members to discover each other, this deployments uses seed ip addresses.
+This allows the kubernetes master and workers to register with the consul servers and thus be able to
+leverage consul DNS for intercomponent communication. You should set the same seed ip address for the following:
+
+```
+- instance_groups:
+  name: kube-master
+  instances: 3
+  vm_type: default
+  jobs:
+  ...
+  networks:
+    name: default
+    static_ips: [10.0.1.6, 10.0.1.7, 10.0.1.8] 
+...
+  - name: consul_agent
+    release: consul
+    properties:
+      consul:
+        agent:
+          mode: server
+          domain: cf.internal
+          servers:
+            lan:
+            - 10.0.1.6
+            - 10.0.1.7
+            - 10.0.1.8
+...
+  - name: consul_agent
+    release: consul
+    properties:
+      consul:
+        agent:
+          mode: client
+          domain: cf.internal
+          servers:
+            lan:
+            - 10.0.1.6
+            - 10.0.1.7
+            - 10.0.1.8
+```
+- instance group properties for static ips
+- consul properties for server lan ips
+- consul properties for client lan ips (Generally k8 workers) 
+
+Also you'll need to define static ip addresses in the cloud-config. Here is an example using bosh-lite cloud-config:
+
+```
+networks:
+- name: private
+  type: manual
+  subnets:
+  - az: z1
+    cloud_properties:
+      name: random
+    gateway: 10.244.2.1
+    range: 10.244.2.0/24
+    reserved:
+    - 10.244.2.2-10.244.2.3
+    - 10.244.2.255
+    static:
+    - 10.244.2.4
+    - 10.244.2.6
+    - 10.244.2.7
+    - 10.244.2.8
 ```
 
 ### Kubernetes POD Networking

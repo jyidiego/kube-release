@@ -561,6 +561,7 @@ instance_groups:
     release: kube-release
   networks:
     - name: default
+      static_ips: [10.0.1.6, 10.0.1.7, 10.0.1.8]
 
 - name: kube-worker
   azs: [z1]
